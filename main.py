@@ -5,7 +5,7 @@ import numpy as np
 import sklearn
 
 app = Flask(__name__)
-model = pickle.load(open('rfmodel.pkl', 'rb'))
+model = pickle.load(open('tddmodel.pkl', 'rb'))
 encoder = pickle.load(open('encoder.pickle', 'rb'))
 
 
@@ -42,16 +42,19 @@ def predict():
         
         psych = request.form['psych']
         
-        query = [[age,sex,TSH,TT4,FTI,T3,T4U,on_thyroxine,on_antithyroid_medication,goitre,hypopituitary,psych]]
+        query = [age,sex,TSH,TT4,FTI,T3,T4U,on_thyroxine,on_antithyroid_medication,goitre,hypopituitary,psych]
         
-        predicted_class = model.predict(query)[0]
+        predicted_class = model.predict(np.array(query).reshape(1,12))[0]
         
         predicted_class = int(predicted_class)
     
-        actual_class = encoder.inverse_transform([predicted_class])[0]
+        class_name = encoder.inverse_transform([predicted_class])[0]
         
-        return render_template('index.html', prediction_text=actual_class)
+        return render_template('index.html', prediction_text=class_name)
     
 if __name__=="__main__":
     app.run(debug=True)
-    
+
+
+
+   
